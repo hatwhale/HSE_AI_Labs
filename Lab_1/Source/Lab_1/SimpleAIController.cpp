@@ -7,22 +7,35 @@ ASimpleAIController::ASimpleAIController()
 {
     bDeliveringOrder = false;
     CurrentOrderNumber = -1;
+	terribleStatus = 0;
 }
 
 void ASimpleAIController::Tick(float DeltaSeconds)
 {
     if (bDeliveringOrder) {
         float Distance = GetDistanceToDestination(CurrentDestination);
-        if (Distance > 300.f) {
-            SetNewMoveDestination(CurrentDestination);
-            return;
-        }
+		if (Distance > 300.0f) {
+			SetNewMoveDestination(CurrentDestination);
+			return;
+		}
+		if (terribleStatus == 1 && Distance < 300.0f) {
+			terribleStatus = 2;
+		}
         UE_LOG(LogTemp, Warning, TEXT("Trying to deliver order %d, current distance: %1.3f"), CurrentOrderNumber, Distance);
         bool bDeliveredOrder = TryDeliverPizza(CurrentOrderNumber);
         if (bDeliveredOrder) {
             UE_LOG(LogTemp, Warning, TEXT("Delivered order %d"), CurrentOrderNumber);
             bDeliveringOrder = false;
             CurrentOrderNumber = -1;
+			terribleStatus = 0;
+			auto Orders = GetPizzaOrders();
+			auto HouseLocations = GetHouseLocations();
+			for (int i = 0; i < Orders.Num(); ++i) 
+				if (WaitsHousePizzaDelivery(Orders[i].HouseNumber) && Distance == GetDistanceToDestination(HouseLocations[Orders[i].HouseNumber])) {
+					terribleStatus = 2;
+					break;
+				}
+
         } else {
             SetNewMoveDestination(CurrentDestination);
         }
@@ -47,7 +60,23 @@ void ASimpleAIController::Tick(float DeltaSeconds)
             closestOrder = i;
         }
     }
+
+	int terribleOrder = 0;
+	float burnestTime = GetHouseTimeLeft(Orders[0].HouseNumber);
+	for (int i = 0; i < Orders.Num(); ++i) {
+		float currentTime = GetHouseTimeLeft(Orders[i].HouseNumber);
+		if (currentTime < burnestTime) {
+			burnestTime = currentTime;
+			terribleOrder = i;
+		}
+	}
+
     auto Order = Orders[closestOrder];
+
+	if (burnestTime - GetDistanceToDestination(HouseLocations[Orders[terribleOrder].HouseNumber])/GetCharacterMaxSpeed() < 5.0f && terribleStatus != 2){
+		terribleStatus = 1;
+		Order = Orders[terribleOrder];
+	}
 
     int PizzaAmount = GetPizzaAmount();
     if (PizzaAmount == 0) {

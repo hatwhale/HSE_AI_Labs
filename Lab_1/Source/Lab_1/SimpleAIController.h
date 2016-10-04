@@ -21,5 +21,6 @@ protected:
 
     bool bDeliveringOrder;
     int CurrentOrderNumber;
+	int terribleStatus;
     FVector CurrentDestination;
 };

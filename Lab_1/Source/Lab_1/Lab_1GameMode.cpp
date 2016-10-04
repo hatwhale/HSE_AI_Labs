@@ -22,8 +22,8 @@ ALab_1GameMode::ALab_1GameMode()
     // Set the default HUD class to be used in game.
     HUDClass = APizzaHUD::StaticClass();
 
-    // Spawn pizza every 2 seconds.
-    SpawnDelay = 2.0f;
+    // Spawn pizza every 1.2 seconds.
+    SpawnDelay = 1.2f;
 
     TotalPizzaOrderCount = 0;
     DeliveredPizzaOrderCount = 0;
@@ -193,6 +193,12 @@ bool ALab_1GameMode::TryDeliverPizza(ALab_1Character* Character, int OrderNumber
         ++DeliveredPizzaOrderCount;
     }
     return bDelivered;
+}
+
+bool ALab_1GameMode::WaitsPizzaDelivery(int HouseNumber)
+{
+	auto* Actor = Houses[HouseNumber].Actor;
+	return Actor->WaitsPizzaDelivery();
 }
 
 float ALab_1GameMode::GetHouseTimeLeft(int HouseNumber)

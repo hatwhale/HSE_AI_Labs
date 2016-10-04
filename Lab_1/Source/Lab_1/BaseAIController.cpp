@@ -121,6 +121,12 @@ ALab_1Character* ABaseAIController::GetCharacter()
     return Character;
 }
 
+bool ABaseAIController::WaitsHousePizzaDelivery(int HouseNumber)
+{
+	auto* MyGameMode = GetGameMode();
+	return MyGameMode->WaitsPizzaDelivery(HouseNumber);
+}
+
 float ABaseAIController::GetHouseTimeLeft(int HouseNumber)
 {
     auto* MyGameMode = GetGameMode();

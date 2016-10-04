@@ -42,6 +42,8 @@ protected:
 
     int GetPizzaCapacity();
 
+	bool WaitsHousePizzaDelivery(int HouseNumber);
+
     float GetHouseTimeLeft(int HouseNumber);
 
     float GetCharacterMaxSpeed();

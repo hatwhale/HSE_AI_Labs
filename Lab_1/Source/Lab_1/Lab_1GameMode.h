@@ -50,6 +50,8 @@ public:
     // Sets game state to new value.
     void SetCurrentState(ELab_1PlayState NewState);
 
+	bool WaitsPizzaDelivery(int HouseNumber);
+
     float GetHouseTimeLeft(int HouseNumber);
 
 private:
